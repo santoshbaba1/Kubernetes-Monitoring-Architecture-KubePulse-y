@@ -1,4 +1,4 @@
-Below is a clean phase-wise version of project, converted into a practical MVP architecture.
+**Below is a clean phase-wise version of project, converted into a practical MVP architecture.**
 
 The project name is KubePulse.
 
@@ -10,18 +10,18 @@ Python Health Check Service
         v
 Streamlit Dashboard
 
-The key design decision: Streamlit should not directly talk to Kubernetes. Instead, Streamlit talks to a Python health-check API. That keeps the dashboard clean, secure, and easier to extend later.
+**The key design decision:** Streamlit should not directly talk to Kubernetes. Instead, Streamlit talks to a Python health-check API. That keeps the dashboard clean, secure, and easier to extend later.
 
-Phase 1: RKE2 Kubernetes Installation and Cluster Validation
+**Phase 1: RKE2 Kubernetes Installation and Cluster Validation**
 Goal
 
 Install an RKE2 Kubernetes cluster and verify that Kubernetes is healthy before building your own services on top of it.
 
 RKE2’s official quickstart installs the rke2-server service using the installer script, then enables and starts the systemd service. The RKE2 kubeconfig is stored at /etc/rancher/rke2/rke2.yaml.
 
-1.1 Recommended Machine Layout
+**1.1 Recommended Machine Layout**
 
-For MVP:
+**For MVP:**
 
 Node	Purpose
 rke2-server-1	Control plane + etcd
@@ -30,13 +30,13 @@ rke2-worker-2	Optional worker node
 
 For first development, you can also start with one single node.
 
-1.2 Install RKE2 Server Node
+**1.2 Install RKE2 Server Node**
 
 Run on the control-plane node.
 
 sudo mkdir -p /etc/rancher/rke2
 
-Create config:
+**Create config:**
 
 cat <<EOF | sudo tee /etc/rancher/rke2/config.yaml
 write-kubeconfig-mode: "0644"
@@ -45,7 +45,7 @@ tls-san:
   - <CONTROL_PLANE_IP>
 EOF
 
-Install RKE2:
+**Install RKE2:**
 
 curl -sfL https://get.rke2.io | sudo sh -
 
@@ -54,7 +54,7 @@ Enable and start:
 sudo systemctl enable rke2-server.service
 sudo systemctl start rke2-server.service
 
-Check logs:
+**Check logs:**
 
 sudo journalctl -u rke2-server -f
 
@@ -63,7 +63,7 @@ Configure kubectl access:
 export KUBECONFIG=/etc/rancher/rke2/rke2.yaml
 export PATH=$PATH:/var/lib/rancher/rke2/bin
 
-Check cluster:
+**Check cluster:**
 
 kubectl get nodes -o wide
 kubectl get pods -A
@@ -74,11 +74,11 @@ Get the server token from the control-plane node:
 
 sudo cat /var/lib/rancher/rke2/server/node-token
 
-On the worker node:
+**On the worker node:**
 
 curl -sfL https://get.rke2.io | INSTALL_RKE2_TYPE="agent" sudo sh -
 
-Create worker config:
+**Create worker config:**
 
 sudo mkdir -p /etc/rancher/rke2
 
@@ -88,20 +88,20 @@ token: <SERVER_NODE_TOKEN>
 node-name: rke2-worker-1
 EOF
 
-Start worker:
+**Start worker:**
 
 sudo systemctl enable rke2-agent.service
 sudo systemctl start rke2-agent.service
 
-Back on the server:
+**Back on the server:**
 
 kubectl get nodes -o wide
 
-Expected result:
+**Expected result:**
 
 rke2-server-1   Ready
 rke2-worker-1   Ready
-1.4 Cluster Health Validation Checklist
+**1.4 Cluster Health Validation Checklist**
 
 Run these commands before moving to Phase 2.
 
@@ -112,7 +112,7 @@ kubectl get deployments -A
 kubectl get services -A
 kubectl get events -A --sort-by=.lastTimestamp
 
-You should confirm:
+**You should confirm:**
 
 All nodes are Ready
 CoreDNS pods are Running
@@ -120,7 +120,7 @@ No system pods are CrashLoopBackOff
 No worker node is NotReady
 Kubernetes API is reachable
 kubectl commands are working
-Phase 2: Python Health Check Service
+**Phase 2: Python Health Check Service**
 Goal
 
 Build a Python service that connects to Kubernetes standard APIs and returns health information for:
@@ -135,7 +135,7 @@ Namespaces
 
 This service uses the official Kubernetes Python client library.
 
-2.1 Health Check Service Responsibilities
+**2.1 Health Check Service Responsibilities**
 
 The service will expose these APIs:
 
@@ -144,7 +144,10 @@ API	Purpose
 /api/namespaces	List namespaces
 /api/cluster/health	Full cluster health
 /api/cluster/health?namespace=default	Namespace-specific health
-2.2 Project Structure
+
+
+
+**2.2 Project Structure**
 kubepulse/
   health-service/
     main.py
@@ -157,7 +160,11 @@ kubepulse/
   dashboard/
     app.py
     requirements.txt
-2.3 health-service/requirements.txt
+
+    
+**2.3 health-service/requirements.txt**
+
+
 fastapi==0.115.6
 uvicorn[standard]==0.34.0
 kubernetes==32.0.1
@@ -678,7 +685,11 @@ def cluster_health(namespace: Optional[str] = Query(default=None)) -> Dict[str, 
         "pvcs": pvcs,
         "warning_events": events,
     }
-2.5 Run Health Service Locally
+
+
+
+
+**2.5 Run Health Service Locally**
 cd kubepulse/health-service
 
 python3 -m venv .venv
@@ -700,7 +711,10 @@ curl http://localhost:8000/healthz
 curl http://localhost:8000/api/namespaces
 curl http://localhost:8000/api/cluster/health
 curl "http://localhost:8000/api/cluster/health?namespace=default"
-2.6 Dockerfile
+
+
+
+**2.6 Dockerfile**
 
 Create health-service/Dockerfile.
 
@@ -720,7 +734,10 @@ CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 Build:
 
 docker build -t kubepulse-health-service:0.1.0 .
-2.7 Kubernetes RBAC for Health Service
+
+
+
+**2.7 Kubernetes RBAC for Health Service**
 
 Create health-service/k8s/rbac.yaml.
 
@@ -797,7 +814,10 @@ roleRef:
 Apply:
 
 kubectl apply -f k8s/rbac.yaml
-2.8 Kubernetes Deployment for Health Service
+
+
+
+**2.8 Kubernetes Deployment for Health Service**
 
 Create health-service/k8s/deployment.yaml.
 
@@ -874,7 +894,10 @@ Goal
 
 Build a user-friendly dashboard using Streamlit that connects to the Python Health Check Service and displays cluster health. Streamlit is a Python framework for quickly building data apps, and its caching features help avoid unnecessary repeated computation during reruns.
 
-3.1 Dashboard Features
+
+
+
+**3.1 Dashboard Features**
 
 The dashboard will show:
 
@@ -1115,7 +1138,12 @@ with events_tab:
 
 with raw_tab:
     st.json(data)
-3.4 Run Streamlit Dashboard Locally
+
+
+
+
+**3.4 Run Streamlit Dashboard Locally**
+
 cd kubepulse/dashboard
 
 python3 -m venv .venv

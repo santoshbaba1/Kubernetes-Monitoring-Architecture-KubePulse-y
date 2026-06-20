@@ -45,15 +45,19 @@ Pod network throughput rates (TX/RX)
 Role: Routes all traffic from your host machine into the Kind cluster container network.
 
 **Pathing Rules:**
-http://localhost/ 
+
 
 **Streamlit Frontend UI**
-http://localhost/api 
+http://localhost/ 
+
 
 **FastAPI Backend API**
-http://localhost/prometheus 
+http://localhost/api 
+
 
 **Prometheus Web UI**
-http://localhost/grafana 
+http://localhost/prometheus 
+
 
 **Grafana Analytics Dashboard**
+http://localhost/grafana 

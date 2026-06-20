@@ -2,6 +2,9 @@
 KubePulse is a lightweight, real-time observability and health-monitoring system deployed locally inside a Kind (Kubernetes-in-Docker) cluster. It provides a visual control center and a metrics pipeline to monitor cluster infrastructure, workloads, and alerts.
 
 Mermaid diagram
+
+<img width="459" height="445" alt="image" src="https://github.com/user-attachments/assets/eb21127d-2e76-4f8d-9391-4c612b995290" />
+
 🛠️ Key Architectural Components
 1. Interactive Dashboard (Streamlit Frontend)
 Role: The user-facing control panel.

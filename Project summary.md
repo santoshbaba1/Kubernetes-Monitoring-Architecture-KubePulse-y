@@ -46,14 +46,14 @@ Role: Routes all traffic from your host machine into the Kind cluster container 
 
 **Pathing Rules:**
 http://localhost/ 
-→
-→ **Streamlit Frontend UI**
+
+**Streamlit Frontend UI**
 http://localhost/api 
-→
-→ **FastAPI Backend API**
+
+**FastAPI Backend API**
 http://localhost/prometheus 
-→
-→ **Prometheus Web UI**
+
+**Prometheus Web UI**
 http://localhost/grafana 
-→
-→ **Grafana Analytics Dashboard**
+
+**Grafana Analytics Dashboard**

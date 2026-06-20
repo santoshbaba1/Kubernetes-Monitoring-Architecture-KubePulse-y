@@ -9,6 +9,7 @@ KubePulse is a lightweight, real-time observability and health-monitoring system
 
 
 **1. Interactive Dashboard (Streamlit Frontend)**
+
 Role: The user-facing control panel.
 Features: Displays summary metrics (Node counts, namespaces, pod allocations), detailed lists of active Pods and Deployments (with namespace filters), Node infrastructure specifications, active Alertmanager warning cards, and a live Kubernetes event stream.
 Design: Uses a clean, dark-mode glassmorphic interface and centers action buttons to open auxiliary monitoring tools.
@@ -16,18 +17,21 @@ Design: Uses a clean, dark-mode glassmorphic interface and centers action button
 
 
 **2. Control Center API (FastAPI Backend)**
+
 Role: The bridge between the Kubernetes cluster and the user dashboard.
 Features: Uses the official Kubernetes Python Client library to query the Kubernetes API Server. It exposes API endpoints (/api/cluster/summary, /pods, /nodes, etc.) and hosts a webhook endpoint (/api/alerts/webhook) that receives alerts from Alertmanager.
 
 
 
 **3. Metric Pipeline (Prometheus)**
+
 Role: Time-series database and metric aggregator.
 Features: Configured to scrape metrics from the API Server, Kubernetes nodes (Kubelet), and container resource metrics (via cAdvisor).
 
 
 
 **4. Visual Analytics (Grafana)**
+
 Role: Visual graphing and dashboarding.
 Features: Provisioned automatically with a default datasource and a custom KubePulse Monitoring Dashboard as its home page. It displays real-time timeseries graphs for:
 CPU/Memory usage per pod
@@ -37,6 +41,7 @@ Pod network throughput rates (TX/RX)
 
 
 **5. Routing Gateway (NGINX Ingress)**
+
 Role: Routes all traffic from your host machine into the Kind cluster container network.
 
 **Pathing Rules:**
